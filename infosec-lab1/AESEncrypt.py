@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-import random
+import re
 from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex, hexlify, unhexlify
 
@@ -20,7 +20,8 @@ class AESEncrypt:
         assert len(key) == 16, 'key must be 16 bytes in AES-128'
         self.key = key
         assert mode in ['ECB', 'CBC', 'CFB', 'OFB', 'CTR'], 'aes mode not support yet~'
-        self.mode = eval('AES.MODE_{}'.format(mode))
+        self.mode_str = 'AES.MODE_{}'.format(mode)
+        self.mode = eval(self.mode_str)
         self.ciphertext = ''
         self.img_clr = img_clr
         if self.img_clr:
@@ -48,12 +49,42 @@ class AESEncrypt:
             self._bmpheader = bmpheader
             self._dibheader = dibheader
 
-    def encrypt(self, text=None, **kwargs):
+    def __padding__(self, cleartext):
+        length = 16
+        count = len(cleartext)
+        if (count % length) != 0:
+            # padding
+            add = length - (count % length)
+        else:
+            add = 0
         if self.img_clr:
-            if 'img_out' in kwargs:
-                img_out = kwargs['img_out']
-            else:
-                img_out = 'test_out.bmp'
+            cleartext += (b'\0' * add)
+        else:
+            cleartext += ('\0' * add)
+        return cleartext
+
+    def __get_counter__(self, filename='aes.log'):
+        with open(filename, 'r') as f_in:
+            logs_data = f_in.readlines()
+        for line in logs_data:
+            if re.match(r'.*secret=(.*)\n', line):
+                result = re.findall(r'secret=(.+)\n', line)[0]
+                return eval(result)
+        return False
+
+    def __log__(self, mode, key, **kwargs):
+        with open('aes.log', 'a+') as f_in:
+            format_log = '[{}]:\n\tkey={}'.format(mode, key)
+            f_in.write(format_log)
+            for key, value in kwargs.items():
+                if value:
+                    f_in.write('\n\t{}={}'.format(key, value))
+            f_in.write('\n')
+
+    def encrypt(self, **kwargs):
+        if self.img_clr:
+            # encrypt an image
+            img_out = kwargs['img_out'] if 'img_out' in kwargs else './images/test_out.bmp'
             with open(self.img_clr, 'rb') as f_in:
                 with open(img_out, 'wb') as f_out:
                     f_out.write(self._bmpheader)
@@ -61,39 +92,40 @@ class AESEncrypt:
                     row_padded = (self.width * self.height * 3)
                     image_data = f_in.read(row_padded)
                     cleartext = unhexlify(hexlify(image_data))
-                    length = 16
-                    count = len(cleartext)
-                    if (count % length) != 0:
-                        # padding
-                        add = length - (count % length)
-                    else:
-                        add = 0
-                    cleartext += (b'\0' * add)
+                    cleartext = self.__padding__(cleartext)
 
                     # Initialization Vector
-                    IV = ''.join(chr(random.randint(0, 0xFF)) for i in range(16))
-                    print(IV)
-                    print(len(IV))
-                    # Encryptor
-                    encryptor = AES.new(self.key, self.mode, IV=IV)
+                    # IV = ''.join(chr(random.randint(0, 0xFF)) for i in range(16))
+                    # Create a cryptor
+                    if self.mode in [AES.MODE_ECB, AES.MODE_CBC, AES.MODE_CFB, AES.MODE_OFB]:
+                        secret = ''
+                        cryptor = AES.new(self.key, self.mode, IV=self.key)
+                    elif self.mode == AES.MODE_CTR:
+                        secret = os.urandom(16)
+                        cryptor = AES.new(self.key, self.mode,
+                                          IV=self.key, counter=lambda: secret)
                     # Perform the encryption and write output to file
-                    f_out.write(encryptor.encrypt(cleartext))
-        else:
+                    self.__log__(self.mode_str, self.key,
+                                 **{'secret': secret})
+                    f_out.write(cryptor.encrypt(cleartext))
+        elif 'text' in kwargs:
+            cleartext = kwargs['text']
+            # encrypt a text
+            # key must be 16(AES-128) / 24(AES-192) / 32(AES-256) bytes
+            cleartext = self.__padding__(cleartext)
+            # Create a cryptor
             if self.mode in [AES.MODE_ECB, AES.MODE_CBC, AES.MODE_CFB, AES.MODE_OFB]:
-                cryptor = AES.new(self.key, self.mode, self.key)
+                secret = ''
+                cryptor = AES.new(self.key, self.mode, IV=self.key)
             elif self.mode == AES.MODE_CTR:
                 secret = os.urandom(16)
-                cryptor = AES.new(self.key, self.mode, self.key, counter=lambda: secret)
-            # key must be 16(AES-128) / 24(AES-192) / 32(AES-256) bytes
-            length = 16
-            count = len(text)
-            if (count % length) != 0:
-                # padding
-                add = length - (count % length)
-            else:
-                add = 0
-            text += ('\0' * add)
-            self.ciphertext = cryptor.encrypt(text)
+                cryptor = AES.new(self.key, self.mode,
+                                  IV=self.key, counter=lambda: secret)
+            self.ciphertext = cryptor.encrypt(cleartext)
+            self.__log__(self.mode_str, self.key,
+                         **{'secret': secret,
+                            'cleartext': cleartext,
+                            'ciphertext': b2a_hex(self.ciphertext)})
             return b2a_hex(self.ciphertext)
 
     def decrypt(self, text, **kwargs):
@@ -101,7 +133,9 @@ class AESEncrypt:
             cryptor = AES.new(self.key, self.mode, self.key)
             plain_text = cryptor.decrypt(a2b_hex(text))
         elif self.mode == AES.MODE_CTR:
-            secret = os.urandom(16)
-            cryptor = AES.new(self.key, self.mode, self.key, counter=lambda: secret)
+            secret = self.__get_counter__()
+            assert secret, 'CTR mode must include args `counter(secret)`'
+            cryptor = AES.new(self.key, self.mode,
+                              self.key, counter=lambda: secret)
             plain_text = cryptor.decrypt(a2b_hex(text))
         return plain_text.rstrip(b'\0')
