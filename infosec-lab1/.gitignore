@@ -1,4 +1,6 @@
-__pycache__/*
-aes.log
-keystore
+lab1-1/__pycache__/
+lab1-1/aes.log
+lab1-1/images/
+
+lab1-2/keystore
 !*.doc

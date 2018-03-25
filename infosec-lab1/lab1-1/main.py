@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
-import os
-from AESEncrypt import AESEncrypt
+import os, sys
+sys.path.append('.')
+from AESEncrypt import *
 
 
 def test(key, mode):
