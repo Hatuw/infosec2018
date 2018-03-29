@@ -4,6 +4,8 @@
 - [x] 1.1 分组密码算法AES及操作模式实验
 - [x] 1.2 公钥密码算法RSA
 
+[toc]
+
 ## Requirement
 - Ubuntu16.04.4LTS
 - Python3.5.2
@@ -21,7 +23,7 @@
 (**Only test on Ubuntu16.0.4LTS**. If you run this code in other enviroment, such as Windows, some bugs may appear.)
 
 ## 1.1 分组密码算法AES及操作模式实验
-本次实验采用AES-128位对图片进行加密,分别采用 `'ECB', 'CBC', 'CFB', 'OFB', 'CTR'` 模式,对比不同加密模式下的加密效果.实验详细要求参考[这里](./实验1  密码算法实验.doc)
+本次实验采用AES-128位对图片进行加密,分别采用 `'ECB', 'CBC', 'CFB', 'OFB', 'CTR'` 模式,对比不同加密模式下的加密效果.实验详细要求参考[这里](../实验1  密码算法实验.doc)
 
 完成情况:
 
@@ -32,10 +34,14 @@
 - [x] 计数器模式 CTR
 - [x] 日志功能
 
-运行方法:
-`'ECB', 'CBC', 'CFB', 'OFB'` 下只需定义key和mode即可,如加密文本:
+Run in different mode:
+
+ - `'ECB', 'CBC', 'CFB', 'OFB'` 下只需定义key和mode即可.
+ - `'CTR'` 模式需定义 `counter` 默认为 `counter = lambda: os.urandom(16)`
+
+Demo:
 ``` Python
->> from AESEncrypt import AESEncrypt
+>> from AESEncrypt import *
 >> key = 'keyskeyskeyskeys'
 >> mode = 'ECB'
 >> my_aes = AESEncrypt(key, mode)
@@ -77,7 +83,7 @@ b'0123456789ABCDEF'
 - `ClientA`和`ClientB`之间采用socket进行通信,`ServerC`是**静态生成**密钥,单次调用,有能力的话可以添加身份校验功能.当然也可以不使用socket模拟`A` `B`之间的通信
 - 使用时需要删除`./keystore`下的秘钥,否则秘钥重复使用会导致初始化失败(当然你也可以删除整个文件夹)
 
-### How to run?
+### How to run
 1. `rm -r ./keystore`
 2. open a new terminal, run `python ClientA.py`
 3. open a new terminal, run `python ClientB.py`
