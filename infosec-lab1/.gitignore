@@ -3,4 +3,5 @@ lab1-1/aes.log
 lab1-1/images/
 
 lab1-2/keystore
+lab1-2/__pycache__/
 !*.doc
