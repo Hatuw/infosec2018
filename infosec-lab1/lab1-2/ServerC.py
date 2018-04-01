@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*-
+# -*- coding: utf-8 -*-
 import os
 import re
 import rsa
@@ -22,7 +22,7 @@ class ServerC:
         key_files = os.listdir(KEY_STORE)
         for key_file in key_files:
             if re.match(uname, key_file):
-                return False
+                os.remove(os.path.join(KEY_STORE, key_file))
         # use rsa lib to generate keys
         (pubkey, privkey) = rsa.newkeys(1024)
 
