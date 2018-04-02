@@ -4,10 +4,9 @@
 - [x] 1.1 分组密码算法AES及操作模式实验
 - [x] 1.2 公钥密码算法RSA
 
-[toc]
 
 ## Requirement
-- Ubuntu16.04.4LTS
+- Ubuntu16.04.4 LTS
 - Python3.5.2
 - Python packages:
 
