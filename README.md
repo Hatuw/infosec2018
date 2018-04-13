@@ -13,8 +13,7 @@ This repo will include some code of Infosec 2018. (Mainly use Ubuntu16.04.4LTS a
 	- [x] 1.2 公钥密码算法RSA
 
 - [ ] Hash算法实验
-	- [ ] 2.1 纯暴力攻击
-	- [ ] 2.2 利用字典的暴力攻击
+	- [ ] 2.1 构造谜题并求解
 
 有些实验实现起来可能比较难,我将自己的代码share出来,有需要的同学可以参考一下,但一定不要抄袭!!..**当然也建议自己实现一遍**
 
