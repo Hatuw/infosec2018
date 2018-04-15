@@ -4,7 +4,11 @@
 
 - [x] 构造谜题并求解
 
+
 ## Requirement
+
+*This repo has two inference, C++ and Python. The following requirement is just for the Python's inference.*
+
 - Ubuntu16.04.4 LTS
 
 ## 实验要求
