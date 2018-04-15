@@ -19,10 +19,10 @@
 
 - 构造谜题并求解
 
-    1. $d = 1$
-    2. $v = < Your name > / < Your ID >$
-    3. Find $x$: $Hash(v||x) < SHR(2^n-1, d\times4)$
-    4. Store $x$
-    5. $d = 2, 3$; repeat (1)--(4)
+    1. d = 1
+    2. v = < Your name > / < Your ID >
+    3. Find x: Hash(v||x) < SHR(2^n-1, d*4)
+    4. Store x
+    5. d = 2, 3...; repeat (1)--(4)
 
 - Analyse the result
