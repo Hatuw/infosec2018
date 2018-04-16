@@ -15,6 +15,8 @@ This repo will include some code of Infosec 2018. (Mainly use Ubuntu16.04.4LTS a
 - [x] Hash算法实验
 	- [x] 2.1 构造谜题并求解
 
+- [ ] 网络嗅探器实验
+
 有些实验实现起来可能比较难,我将自己的代码share出来,有需要的同学可以参考一下,但一定不要抄袭!!..**当然也建议自己实现一遍**
 
 代码比较乱,如果发现其中有什么bugs,欢迎pull request
