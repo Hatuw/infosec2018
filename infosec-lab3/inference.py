@@ -18,4 +18,7 @@ schools = pd.read_excel(rank_file, [0, 1])
 tmp_slice = range((SNO-1)*4, SNO*4)
 domestic_list = schools[0].iloc[tmp_slice, 1].values
 foreign_list = schools[1].iloc[tmp_slice, 1].values
-# print(domestic_list, foreign_list)
+for school in domestic_list:
+    print(school)
+for school in foreign_list:
+    print(school)
