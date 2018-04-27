@@ -1,5 +1,9 @@
 # Infosec2018
 
+**有人抄袭..此项目不再更新**
+
+btw, 有问题私聊吧
+
 This repo will include some code of Infosec 2018. (Mainly use Ubuntu16.04.4LTS and Python3.5.2)
 
 **仅供参考，请勿抄袭!!!**
